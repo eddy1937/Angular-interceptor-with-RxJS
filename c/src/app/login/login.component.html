@@ -1,0 +1,20 @@
+<mat-card class="card">
+    <mat-card-title class="title">Login</mat-card-title>
+    <mat-card-subtitle></mat-card-subtitle>
+    <mat-card-content>
+        <form class="form" [formGroup]="loginForm">
+            <mat-form-field class="full-width" appearance="fill">
+              <mat-label>account</mat-label>
+              <input matInput formControlName="account">
+            </mat-form-field>
+            <mat-form-field class="full-width" appearance="fill">
+              <mat-label>password</mat-label>
+              <input matInput formControlName="password">
+            </mat-form-field>
+          </form>
+          <button class="login full-width" mat-button (click)="onLogin()">Login</button>
+    </mat-card-content>
+    <!-- <mat-card-actions>
+        <button class="login" mat-button>Login</button>
+    </mat-card-actions> -->
+</mat-card>
