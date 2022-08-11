@@ -1,29 +1,35 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-
-import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { HttpClientModule, HttpClient, HTTP_INTERCEPTORS } from '@angular/common/http';
-import { LayoutComponent } from './layout/layout.component';
 import { AuthHttpInterceptor } from './authentication/auth-http-interceptor';
+import { ReactiveFormsModule } from '@angular/forms';
+import { HttpLogInterceptor } from './authentication/http-log-interceptor';
 
 @NgModule({
   declarations: [
     AppComponent,
-    LayoutComponent
+    // LayoutComponent
   ],
   imports: [
     BrowserModule,
-    AppRoutingModule,
+    // AppRoutingModule,
     BrowserAnimationsModule,
-    HttpClientModule
+    HttpClientModule,
+    ReactiveFormsModule
   ],
   providers: [{
     provide: HTTP_INTERCEPTORS,
     useClass: AuthHttpInterceptor,
     multi: true,
-  }],
+  },
+  {
+    provide: HTTP_INTERCEPTORS,
+    useClass: HttpLogInterceptor,
+    multi: true,
+  }
+],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

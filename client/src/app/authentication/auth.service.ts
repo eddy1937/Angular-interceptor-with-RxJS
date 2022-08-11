@@ -40,12 +40,20 @@ export class AuthService {
   public login$: Observable<User>;
   public logout$: Observable<User>;
 
-  constructor(private http: HttpClient, private router: Router) {
+  constructor(private http: HttpClient) {
     [this.login$, this.logout$] = partition(this.userWithoutInit$,(user) => user !== null);
 
     this.logout$.subscribe((res) => {
       this.revokeToken();
     });
+  }
+
+  get user() {
+    return this.user$.value;
+  }
+
+  get isLogin() {
+    return !!this.user && this.user !== userInfoInit;
   }
 
   get accessToken() {
@@ -100,7 +108,6 @@ export class AuthService {
   }
 
   logout() {
-    console.log('logout');
     this.user$.next(null);
   }
 }

@@ -1,1 +1,12 @@
-<router-outlet></router-outlet>
+<div class="container text-white">
+    <h1 class="display-4 pt-5 pb-3">Angular interceptor with RxJS</h1>
+    <div class="my-3">
+        <button *ngIf="isLogin" class="btn btn-outline-danger mx-2" (click)="onLogout()">Logout</button>
+        <button *ngIf="!isLogin" class="btn btn-outline-success mx-2" (click)="onLogin()">Login</button>
+    </div>
+    <div class="log">
+        <ng-container *ngFor="let log of responseLogs">
+            <div>{{ log.url }} {{ log.status }} {{ log.ok }} {{ log.statusText }}</div>
+        </ng-container>
+    </div>
+</div>
