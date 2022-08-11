@@ -4,9 +4,27 @@
         <button *ngIf="isLogin" class="btn btn-outline-danger mx-2" (click)="onLogout()">Logout</button>
         <button *ngIf="!isLogin" class="btn btn-outline-success mx-2" (click)="onLogin()">Login</button>
     </div>
-    <div class="log">
-        <ng-container *ngFor="let log of responseLogs">
-            <div>{{ log.url }} {{ log.status }} {{ log.ok }} {{ log.statusText }}</div>
-        </ng-container>
+    <div #log class="log my-5 px-2">
+        <table class="table table-sm table-dark">
+            <thead>
+                <tr>
+                    <th scope="col"><button type="button" class="btn btn-outline-secondary btn-sm p-0 px-1 clear"
+                            (click)="responseLogs.length = 0"><i class="bi bi-dash-circle-fill"></i></button></th>
+                    <th scope="col">Status</th>
+                    <th scope="col">StatusText</th>
+                    <th scope="col">Url</th>
+                </tr>
+            </thead>
+            <tbody>
+                <ng-container *ngFor="let log of responseLogs">
+                    <tr  [ngClass]="log.ok ? 'table-success' : 'table-danger'">
+                        <th scope="row"><i class="bi" [ngClass]="log.ok ? 'bi-check2' : 'bi-x-lg'"></i></th>
+                        <td>{{ log.status }}</td>
+                        <td>{{ log.statusText }}</td>
+                        <td>{{ log.url }}</td>
+                    </tr>
+                </ng-container>
+            </tbody>
+        </table>
     </div>
 </div>
