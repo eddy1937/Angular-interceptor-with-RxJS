@@ -9,7 +9,7 @@ class Xheader {
 
   private constructor(readonly headerName: string) { }
 
-  public has({ headers }: HttpRequest<any>) {
+  public checkHeader({ headers }: HttpRequest<any>) {
     return headers.has(this.headerName);
   }
 
