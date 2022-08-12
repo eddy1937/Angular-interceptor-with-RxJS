@@ -1,6 +1,6 @@
 import { HttpErrorResponse, HttpEvent, HttpHandler, HttpInterceptor, HttpRequest } from "@angular/common/http";
 import { Injectable } from "@angular/core";
-import { BehaviorSubject, catchError, defer, EMPTY, finalize, iif, Observable, takeUntil, throwError } from "rxjs";
+import { BehaviorSubject, catchError, defer, EMPTY, finalize, iif, Observable, share, takeUntil, throwError } from "rxjs";
 import { doBeforeSubscribe, filterIsFalsy, InterceptorSkipHeader, startWhen } from "../uitls";
 import { AuthService } from "./auth.service";
 
@@ -21,18 +21,7 @@ const catch500Error = catchHttpError(500);
 export class AuthHttpInterceptor implements HttpInterceptor {
 
   logoutUser$ = defer(() => (this.authService.logout(), EMPTY));
-
-  refreshToken$ = this.authService.refreshTokenFromServer().pipe(
-    doBeforeSubscribe(() => this.isRefreshing$.next(true)),
-    catchError(() => this.logoutUser$),
-    finalize(() => this.isRefreshing$.next(false))
-  );
-
-  isRefreshing$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
-
-  refreshIsDone$ = this.isRefreshing$.pipe(filterIsFalsy());
-
-  refresh$ = iif(() => this.isRefreshing$.value, this.refreshIsDone$, this.refreshToken$);
+  refresh$ = defer(() => this.authService.refreshTokenFromServer()).pipe(catchError(() => this.logoutUser$), share());
 
   constructor(private authService: AuthService) { }
 
@@ -43,7 +32,7 @@ export class AuthHttpInterceptor implements HttpInterceptor {
   }
 
   public intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-    if (InterceptorSkipHeader.has(request)) {
+    if (InterceptorSkipHeader.checkHeader(request)) {
       const req = InterceptorSkipHeader.deleteHeader(request);
       return next.handle(req);
     }
