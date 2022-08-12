@@ -5,8 +5,9 @@ import { BehaviorSubject, filter, iif, Observable, partition, tap } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { InterceptorSkipHeader } from '../uitls';
 
-const ACCESS_TOKEN = 'accessToken';
-const REFRESH_TOKEN = 'refreshToken';
+export const ACCESS_TOKEN = 'accessToken';
+export const REFRESH_TOKEN = 'refreshToken';
+const Invalid = 'Invalid';
 
 interface Token {
   [ACCESS_TOKEN]: string,
@@ -95,12 +96,28 @@ export class AuthService {
 
   revokeToken(): void {
     // iif(() => !this.accessTokenIsEmpty, this.http.post(environment.oauth2RevokeUrl + this.access_token, null, InterceptorSkipHeader.options)).subscribe();
-    this.removeTokenFromLocalStorage();
+    this.removeToken();
   }
 
-  removeTokenFromLocalStorage(): void {
+  removeToken(): void {
+    this.removeAccessToken();
+    this.removeRefreshToken();
+  }
+
+  removeAccessToken(): void {
     localStorage.removeItem(ACCESS_TOKEN);
+  }
+
+  removeRefreshToken(): void {
     localStorage.removeItem(REFRESH_TOKEN);
+  }
+
+  makeAccessInvalid(): void {
+    localStorage.setItem(ACCESS_TOKEN, Invalid);
+  }
+
+  makeRefreshInvalid(): void {
+    localStorage.setItem(REFRESH_TOKEN, Invalid);
   }
 
   login(userInfo: UserInfo) {

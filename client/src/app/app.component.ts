@@ -1,4 +1,5 @@
-import { debounceTime, defer } from 'rxjs';
+import { concatMap, delayWhen, mergeMap, of, range, take, tap } from 'rxjs';
+import { debounceTime, defer, delay, interval } from 'rxjs';
 import { Component, ElementRef, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { switchMap } from 'rxjs';
@@ -18,7 +19,9 @@ export class AppComponent {
 
     responseLogs: Array<LogHttpResType> = [];
 
-    onLogin$ = defer(() => this.authService.userLogin(this.loginData)).pipe(switchMap(() => this.authService.queryUserInfoByAuth()));
+    queryUserInfoByAuth$ = this.authService.queryUserInfoByAuth();
+
+    onLogin$ = defer(() => this.authService.userLogin(this.loginData)).pipe(switchMap(() => this.queryUserInfoByAuth$));
 
     get logElement() {
         return this.logRef.nativeElement;
@@ -28,29 +31,32 @@ export class AppComponent {
         return this.loginForm.value;
     }
 
-    get isLogin() {
-        return this.authService.isLogin;
-    }
-
-    constructor(private fb: FormBuilder, private authService: AuthService, private logService: LogHttpResponseService) {
+    constructor(private fb: FormBuilder, public authService: AuthService, private logService: LogHttpResponseService) {
         this.loginForm = this.fb.group({
             account: ['eddylin', Validators.required],
             password: ['password', Validators.required],
         });
 
-        logService.logHttpRes$.subscribe((r) => this.responseLogs.push(r));
-        logService.logHttpRes$.pipe(debounceTime(30)).subscribe(() => this.logElement.scrollTo({top: this.logElement.scrollHeight, behavior: 'auto' }));
+        logService.logHttpRes$.pipe(concatMap((x) => of(x).pipe(delay(30)))).subscribe((r) => {
+            this.responseLogs.push(r);
+            setTimeout(() => this.logElement.scrollTop = this.logElement.scrollHeight,0);
+        });
     }
 
     ngOnInit(): void {
-        this.authService.queryUserInfoByAuth().subscribe();
+        this.queryUserInfoByAuth();
     }
 
     onLogin() {
         this.onLogin$.subscribe();
     }
 
-    onLogout() {
-        this.authService.logout();
+    queryUserInfoByAuth() {
+        this.queryUserInfoByAuth$.subscribe();
+    }
+
+    queryUserInfoByAuthx10() {
+        // interval(10).pipe(take(10), mergeMap(() => this.queryUserInfoByAuth$)).subscribe();
+        range(10).pipe(mergeMap(() => this.queryUserInfoByAuth$)).subscribe();
     }
 }

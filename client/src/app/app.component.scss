@@ -1,4 +1,10 @@
 :host {
+    .token {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
     div.log {
         height: 600px;
         border: 2px white solid;
